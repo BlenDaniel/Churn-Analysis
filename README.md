@@ -107,7 +107,7 @@ To run the application, follow these steps:
 cd churn_analysis
 
 # Start the API service
-uvicorn api_service.main:app --host 0.0.0.0 --port 8000
+uvicorn backend.api_service.main:app --host 0.0.0.0 --port 8000
 ```
 
 2. Start the frontend application:
