@@ -14,19 +14,17 @@ from sqlalchemy.orm import Session
 from backend.data_service.models import Customer
 
 
-# Create resources folder if it doesn't exist
+
 if not os.path.exists("resources"):
     os.makedirs("resources")
 
     
 def generate_graph_with_specifics(data: Request, db: Session):
     try:
-        # Connect to the database and inspect the columns
         inspector = inspect(db.bind)
-        columns = inspector.get_columns('customers')  # Assuming 'customers' is the table name
+        columns = inspector.get_columns('customers')  
         column_names = [column['name'] for column in columns]
 
-        # Check if the data can be mapped to any column
         valid_data = {}
         for item in data.query_params:
             key = item
@@ -37,16 +35,14 @@ def generate_graph_with_specifics(data: Request, db: Session):
         if not valid_data:
             raise HTTPException(status_code=400, detail="No valid data to map to database columns.")
 
-        # Convert valid_data to DataFrame
         df = pd.DataFrame([valid_data])
 
-        # Plot the data
+
         ax = df.plot(kind='bar', figsize=(10, 6))
         plt.title('Generated Graph')
         plt.xlabel('Data Points')
         plt.ylabel('Values')
 
-        # Save the plot as an image in the resources folder with a timestamp
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         image_path = os.path.join("resources", f"generated_graph_{timestamp}.png")
         plt.savefig(image_path)

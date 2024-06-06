@@ -21,8 +21,7 @@ def get_db():
 async def draw_graphs(data: Request, db: Session = Depends(get_db)):
     # Draw graphs and relationships
     try:
-        # Call method from analysis_tools folder to generate graph
-        graph_path = generate_graph(data, db)  # Assuming this function returns the path of the generated PNG file
+        graph_path = generate_graph(data, db)  
         logger.info("Graphs drawn successfully.")
         return {"message": "Graphs drawn successfully.", "graph_path": graph_path}
     except Exception as e:

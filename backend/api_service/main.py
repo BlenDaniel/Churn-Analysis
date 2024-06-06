@@ -8,12 +8,3 @@ app.include_router(visualization.router, prefix="/visualization", tags=["Visuali
 app.include_router(dataset.router, prefix="/dataset", tags=["Dataset"])
 app.include_router(analysis.router, prefix="/causal_inference", tags=["Causal Inference"])
 
-@app.on_event("startup")
-async def startup_event():
-    # Any startup tasks
-    pass
-
-@app.on_event("shutdown")
-async def shutdown_event():
-    # Any shutdown tasks
-    pass
