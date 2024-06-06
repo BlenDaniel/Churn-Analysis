@@ -19,6 +19,17 @@ def get_db():
     finally:
         db.close()
 
+
+@router.get("/check_database_connection/", response_model=ApiResponse)
+async def check_database_connection(db: Session = Depends(get_db)):
+    try:
+        # Attempt a simple query to check if the database is connected
+        db.query(data_models.Customer).first()
+        return {"message": "Database connection is successful."}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Database connection error")
+
+
 @router.post("/create_customer/", response_model=ApiResponse)
 async def create_customer(customer_data: CustomerCreate, db: Session = Depends(get_db)):
     # Create a new customer
