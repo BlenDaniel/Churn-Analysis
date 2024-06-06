@@ -4,6 +4,8 @@ from sqlalchemy import Column, Integer, String, Boolean, Date
 from sqlalchemy.ext.declarative import declarative_base
 from pydantic import BaseModel
 from datetime import date
+from typing import Optional
+
 
 Base = declarative_base()
 
@@ -15,6 +17,27 @@ class Customer(Base):
     subscription_start_date = Column(Date)
     subscription_end_date = Column(Date)
     churned = Column(Boolean, default=False)
+
+
+class Customer(BaseModel):
+    id: int
+    name: str
+    email: str
+    subscription_start_date: date
+    subscription_end_date: date
+    churned: bool
+
+    class Config:
+        orm_mode = True
+
+class CustomerRead(BaseModel):
+    id: int
+    name: str
+    email: str
+    subscription_start_date: Optional[str]
+    subscription_end_date: Optional[str]
+    churned: bool
+
 
 class CustomerCreate(BaseModel):
     name: str

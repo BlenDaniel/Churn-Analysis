@@ -1,6 +1,7 @@
 # backend/analysis_tools/database.py
 
 import os
+from fastapi import HTTPException, Request
 import pandas as pd
 import matplotlib.pyplot as plt
 from datetime import datetime
@@ -12,33 +13,29 @@ import pandas as pd
 from sqlalchemy.orm import Session
 from backend.data_service.models import Customer
 
-# Database connection setup
-DATABASE_URL = settings.database_url
-engine = create_engine(DATABASE_URL)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # Create resources folder if it doesn't exist
 if not os.path.exists("resources"):
     os.makedirs("resources")
 
     
-async def generate_graph_with_specifics(*data: any):
+def generate_graph_with_specifics(data: Request, db: Session):
     try:
         # Connect to the database and inspect the columns
-        inspector = inspect(engine)
+        inspector = inspect(db.bind)
         columns = inspector.get_columns('customers')  # Assuming 'customers' is the table name
         column_names = [column['name'] for column in columns]
 
         # Check if the data can be mapped to any column
         valid_data = {}
-        for item in data:
-            for key, value in item.items():
-                if key in column_names:
-                    valid_data[key] = value
+        for item in data.query_params:
+            key = item
+            value = data.query_params[item]
+            if key in column_names:
+                valid_data[key] = value
 
         if not valid_data:
-            logger.error("No valid data to map to database columns.")
-            return {"message": "No valid data to map to database columns."}
+            raise HTTPException(status_code=400, detail="No valid data to map to database columns.")
 
         # Convert valid_data to DataFrame
         df = pd.DataFrame([valid_data])
@@ -55,14 +52,16 @@ async def generate_graph_with_specifics(*data: any):
         plt.savefig(image_path)
         plt.close()
 
-        logger.info("Graph generated and saved successfully.")
         return {"message": "Graph generated and saved successfully.", "image_path": image_path}
 
     except Exception as e:
-        logger.error(f"Error generating graph: {e}")
-        return {"message": "Error generating graph.", "error": str(e)}
+        raise HTTPException(status_code=500, detail="Error generating graph.")
 
-def generate_graph(db: Session = SessionLocal()):
+
+def generate_graph(data: Request, db: Session):
+
+
+
     customers = db.query(Customer).all()
     if not customers:
         raise ValueError("No data found in the database.")

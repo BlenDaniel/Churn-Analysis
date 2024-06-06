@@ -13,7 +13,7 @@ def get_logger():
     ch = logging.StreamHandler()
     ch.setLevel(settings.logging_level)
     ch.setFormatter(formatter)
-    logging.addHandler(ch)
+    logger.addHandler(ch)
 
     return logger
 

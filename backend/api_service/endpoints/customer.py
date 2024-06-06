@@ -1,11 +1,12 @@
 # backend/api_service/endpoints/customer.py
 
+from typing import List
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 from backend.config.logging import logger
 from backend.data_service import models as data_models
 from backend.data_service.database import SessionLocal
-from backend.data_service.models import CustomerCreate, Customer, ApiResponse
+from backend.data_service.models import CustomerCreate, CustomerRead, Customer, ApiResponse
 
 
 router = APIRouter()
@@ -32,11 +33,10 @@ async def create_customer(customer_data: CustomerCreate, db: Session = Depends(g
         logger.error(f"Error creating customer: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
-@router.get("/read_customer/{customer_id}", response_model=Customer)
+@router.get("/read_customer/{customer_id}", response_model=CustomerRead)
 async def read_customer(customer_id: int, db: Session = Depends(get_db)):
-    # Read customer details
     try:
-        customer = db.query(data_models.Customer).filter(data_models.Customer.id == customer_id).first()
+        customer = db.query(Customer).filter(Customer.id == customer_id).first()
         if not customer:
             raise HTTPException(status_code=404, detail="Customer not found")
         return customer
@@ -77,7 +77,7 @@ async def delete_customer(customer_id: int, db: Session = Depends(get_db)):
         logger.error(f"Error deleting customer: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
-@router.get("/view_database/", response_model=list[Customer])
+@router.get("/view_database/", response_model=List[Customer])
 async def view_database(db: Session = Depends(get_db)):
     # View all customers in the database
     try:
@@ -86,7 +86,6 @@ async def view_database(db: Session = Depends(get_db)):
     except Exception as e:
         logger.error(f"Error viewing database: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
-
 
 @router.post("/add_customers_in_bulk/", response_model=ApiResponse)
 async def add_customers_in_bulk(customers: List[CustomerCreate], db: Session = Depends(get_db)):
