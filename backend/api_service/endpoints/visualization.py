@@ -6,12 +6,12 @@ from backend.analysis_tools.graphing import generate_graph
 
 router = APIRouter()
 
-@router.get("/draw_graphs/")
-async def draw_graphs():
+@router.get("/draw_graph/")
+async def draw_graphs(*data: any):
     # Draw graphs and relationships
     try:
         # Call method from analysis_tools folder to generate graph
-        graph_path = generate_graph()  # Assuming this function returns the path of the generated PNG file
+        graph_path = generate_graph(data)  # Assuming this function returns the path of the generated PNG file
         logger.info("Graphs drawn successfully.")
         return {"message": "Graphs drawn successfully.", "graph_path": graph_path}
     except Exception as e:

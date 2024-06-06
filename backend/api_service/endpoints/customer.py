@@ -1,4 +1,4 @@
-# backend/api_service/endpoints/crud.py
+# backend/api_service/endpoints/customer.py
 
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session

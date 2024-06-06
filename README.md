@@ -53,60 +53,42 @@ This command starts the FastAPI application with auto-reload enabled. You can no
 
 With these instructions, you'll have your environment set up and your FastAPI application running. Let me know if you need further assistance!
 
+## Running Tests
+Make sure you have pytest and fastapi installed. To run the tests, use the following command:
+
+```bash
+pytest tests/
+```
 ## Project Structure
 
 The project directory structure is as follows:
 ```
-churn_analysis/
-│
-├── backend/
-│   ├── config/
-│   │   ├── __init__.py
-│   │   ├── settings.py      # Application settings
-│   │   └── logging.py       # Logging configuration
-│   │
-│   ├── utils/
-│   │   ├── __init__.py
-│   │   ├── cache.py         # Caching utilities
-│   │   └── authentication.py  # User authentication utilities
-│   │
-│   ├── api_service/
-│   │   ├── __init__.py
-│   │   └── main.py         # FastAPI routes
-│   │
-│   ├── data_service/
-│   │   ├── __init__.py
-│   │   ├── database.py     # Database access and ORM
-│   │   └── models.py       # ORM models
-│   │
-│   └── causal_inference_service/
-│       ├── __init__.py
-│       └── causal_analysis.py    # Causal inference using DoWhy
-│
-├── frontend/
-│   ├── public/
-│   ├── src/
-│   │   ├── components/    # React components
-│   │   ├── pages/         # Application pages
-│   │   └── utils/         # Utility functions
-│   ├── package.json       # Frontend dependencies
-│   ├── README.md
-│   └── ...                # Other frontend files
-│
-├── docker/
-│   ├── api_service.dockerfile
-│   ├── data_service.dockerfile
-│   └── frontend.dockerfile
-│
-├── tests/
-│   ├── api_service/
-│   ├── data_service/
-│   ├── causal_inference_service/
-│   └── frontend/
-│
-├── requirements.txt    # Python dependencies
-├── README.md
-└── .gitignore
+backend/
+├── api_service/
+│   ├── endpoints/
+│   │   ├── customer.py
+│   │   ├── visualization.py
+│   │   ├── model.py
+│   │   ├── dataset.py
+│   │   └── analysis.py
+│   ├── main.py
+├── data_service/
+│   ├── __init__.py
+│   ├── database.py
+│   ├── models.py
+│   └── schemas.py
+├── config/
+│   ├── __init__.py
+│   ├── logging.py
+│   └── settings.py
+tests/
+├── conftest.py
+├── test_customer.py
+├── test_visualization.py
+├── test_causal_inference.py
+.env
+requirements.txt
+
 
 ```
 
