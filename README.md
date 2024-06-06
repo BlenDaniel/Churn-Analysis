@@ -68,7 +68,6 @@ backend/
 │   ├── endpoints/
 │   │   ├── customer.py
 │   │   ├── visualization.py
-│   │   ├── model.py
 │   │   ├── dataset.py
 │   │   └── analysis.py
 │   ├── main.py
