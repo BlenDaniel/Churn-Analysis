@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from backend.config.logging import logger
 from backend.data_service import models as data_models
 from backend.data_service.database import SessionLocal
-from backend.data_service.models import CustomerCreate, Customer, ApiResponse
+from backend.data_service.models import Customer, Customer, ApiResponse
 
 
 router = APIRouter()
@@ -21,7 +21,7 @@ def get_db():
 
 
 @router.post("/load/", response_model=ApiResponse)
-async def loadJson(customer_data: List[CustomerCreate], db: Session = Depends(get_db)):
+async def loadJson(customer_data: List[Customer], db: Session = Depends(get_db)):
     try:
         for customer in customer_data:
             customer_entry = data_models.Customer(**customer.dict())

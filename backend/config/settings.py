@@ -16,6 +16,8 @@ class Settings(BaseSettings):
     db_port: str = os.getenv("DB_PORT")
     db_name: str = os.getenv("DB_NAME")
     logging_level: str = os.getenv("LOGGING_LEVEL")
+    arbitrary_types_allowed = True
+
 
     @property
     def database_url(self) -> str:

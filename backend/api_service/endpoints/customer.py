@@ -1,12 +1,14 @@
 # backend/api_service/endpoints/customer.py
 
+from datetime import date
 from typing import List
 from fastapi import APIRouter, HTTPException, Depends
+from sqlalchemy import Boolean, Column, Integer, MetaData, String, Date, Table, select
 from sqlalchemy.orm import Session
 from backend.config.logging import logger
 from backend.data_service import models as data_models
-from backend.data_service.database import SessionLocal
-from backend.data_service.models import CustomerCreate, CustomerRead, Customer, ApiResponse
+from backend.data_service.database import Base, SessionLocal, engine
+from backend.data_service.models import  CustomerRead, ApiResponse, CustomerQuery, Customer
 
 
 router = APIRouter()
@@ -20,22 +22,16 @@ def get_db():
         db.close()
 
 
-@router.get("/check_database_connection/", response_model=ApiResponse)
-async def check_database_connection(db: Session = Depends(get_db)):
-    try:
-        # Attempt a simple query to check if the database is connected
-        db.query(data_models.Customer).first()
-        return {"message": "Database connection is successful."}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail="Database connection error")
+
 
 
 @router.post("/create_customer/", response_model=ApiResponse)
-async def create_customer(customer_data: CustomerCreate, db: Session = Depends(get_db)):
+async def create_customer(customer_data: Customer, db: Session = Depends(get_db)):
     # Create a new customer
     try:
-        customer = data_models.Customer(**customer_data.dict())
-        db.add(customer)
+        customer_initial = CustomerQuery(**customer_data.dict())
+        db.add(customer_initial)
+
         db.commit()
         logger.info("Customer created successfully.")
         return {"message": "Customer created successfully."}
@@ -56,7 +52,7 @@ async def read_customer(customer_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 @router.put("/update_customer/{customer_id}", response_model=ApiResponse)
-async def update_customer(customer_id: int, customer_data: CustomerCreate, db: Session = Depends(get_db)):
+async def update_customer(customer_id: int, customer_data: Customer, db: Session = Depends(get_db)):
     # Update customer details
     try:
         customer = db.query(data_models.Customer).filter(data_models.Customer.id == customer_id).first()
@@ -88,21 +84,22 @@ async def delete_customer(customer_id: int, db: Session = Depends(get_db)):
         logger.error(f"Error deleting customer: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
-@router.get("/view_database/", response_model=List[Customer])
-async def view_database(db: Session = Depends(get_db)):
+@router.get("/view_customers/", response_model=List[CustomerRead])
+async def view_customers (db: Session = Depends(get_db)):
     # View all customers in the database
     try:
-        customers = db.query(data_models.Customer).all()
+        customer_instances = db.query(CustomerQuery).all()
+        customers = [CustomerRead.from_orm(customer) for customer in customer_instances]
         return customers
     except Exception as e:
         logger.error(f"Error viewing database: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 @router.post("/add_customers_in_bulk/", response_model=ApiResponse)
-async def add_customers_in_bulk(customers: List[CustomerCreate], db: Session = Depends(get_db)):
+async def add_customers_in_bulk(customers: List[Customer], db: Session = Depends(get_db)):
     # Add customers in bulk
     try:
-        customer_objects = [data_models.Customer(**customer.dict()) for customer in customers]
+        customer_objects = [data_models.CustomerQuery(**customer.dict()) for customer in customers]
         db.add_all(customer_objects)
         db.commit()
         logger.info(f"{len(customers)} customers added in bulk.")
